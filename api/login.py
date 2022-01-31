@@ -42,6 +42,7 @@ async def login(login_data: LoginModel, response: Response):
             value=c.value,
             httponly=True,
             secure=True,
+            samesite=None,
         )
     logger.info(f"Logged in: {login_data.username}")
     return response
