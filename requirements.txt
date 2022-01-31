@@ -1,0 +1,7 @@
+fastapi
+dnspython
+requests
+aiohttp
+uvicorn
+beautifulsoup4
+pendulum
