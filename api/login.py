@@ -37,13 +37,14 @@ async def login(login_data: LoginModel, response: Response):
     response = JSONResponse(content=content)
     response.headers.append("access-control-expose-headers", "Set-Cookie")
     for c in jar:
-        response.set_cookie(
-            key=c.key,
-            value=c.value,
-            httponly=True,
-            secure=True,
-            samesite=None,
-        )
+        # response.set_cookie(
+        #     key=c.key,
+        #     value=c.value,
+        #     httponly=True,
+        #     secure=True,
+        #     samesite=None,
+        # )
+        response.headers.append("Set-Cookie", f"{c.key}={c.value}; SameSite=None; Secure")
     logger.info(f"Logged in: {login_data.username}")
     return response
     # send cookies to FE/browser, assign user as LoginModel.username
