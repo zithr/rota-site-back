@@ -5,8 +5,6 @@ from rota_funcs import abuild_rota_data as build_rota
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from env.secret import db_login
-
 from api.login import login_router
 from api.get_rota import get_rota_router
 
