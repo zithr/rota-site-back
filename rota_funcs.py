@@ -4,7 +4,6 @@ import math
 import re
 import requests
 import pendulum
-import PySimpleGUI as sg
 import asyncio
 import aiohttp
 import time, json
@@ -69,13 +68,13 @@ async def make_sign_ups(
             )
     for shift in sign:
         print(f"signup for: {shift.dt_obj.format('DD MMM YY @ HHmm')}")
-    if (
-        sg.PopupOKCancel(
-            f"Make {len(sign)} sign ups for {vol.name} ({len(skip)} shifts skipped)\nStarting with: {sign[0].dt_obj.format('DD MMM YY @ HHmm')}\nEnding with {sign[-1].dt_obj.format('DD MMM YY @ HHmm')}"
-        )
-        != "OK"
-    ):
-        return
+    # if (
+    #     sg.PopupOKCancel(
+    #         f"Make {len(sign)} sign ups for {vol.name} ({len(skip)} shifts skipped)\nStarting with: {sign[0].dt_obj.format('DD MMM YY @ HHmm')}\nEnding with {sign[-1].dt_obj.format('DD MMM YY @ HHmm')}"
+    #     )
+    #     != "OK"
+    # ):
+    #     return
     print("apost_all")
     await apost_all_sign_ups(session, vol, sign)
     # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -328,7 +327,7 @@ async def apost_all_sign_ups(
             )
         for coro in asyncio.as_completed(tasks):
             res.append(await coro)
-            sg.one_line_progress_meter("Signing Up", i + 1, len(tasks))
+            # sg.one_line_progress_meter("Signing Up", i + 1, len(tasks))
             i += 1
         print(f"Pushed {volunteer.name}'s rota to site")
     #     responses = await asyncio.gather(*tasks)
@@ -336,15 +335,15 @@ async def apost_all_sign_ups(
     success_signs = [x for x in res if x == 1]
     fail_signs = [", ".join(x) for x in res if x != 1]
     if fail_signs:
-        sg.Popup(
-            f"{len(success_signs)} sign ups made for {volunteer.name}, {len(shifts)-len(success_signs)} errors:\n {fail_signs}",
-            keep_on_top=True,
-        )
+        # sg.Popup(
+        #     f"{len(success_signs)} sign ups made for {volunteer.name}, {len(shifts)-len(success_signs)} errors:\n {fail_signs}",
+        #     keep_on_top=True,
+        # )
         return res
-    sg.Popup(
-        f"{len(success_signs)} sign ups made for {volunteer.name}, {len(shifts)-len(success_signs)} errors:\n",
-        keep_on_top=True,
-    )
+    # sg.Popup(
+    #     f"{len(success_signs)} sign ups made for {volunteer.name}, {len(shifts)-len(success_signs)} errors:\n",
+    #     keep_on_top=True,
+    # )
     return res
 
     # async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=10)) as session:
@@ -377,18 +376,18 @@ def remove_all_sign_ups(
                         continue
                 vol_shift_ids_to_remove.append(vsid)
                 print(f"Removing from: {shift.date.format('DD MMM YY @ HHmm')}")
-    if (
-        sg.PopupOK(
-            f"Remove {volunteer.name} from {len(vol_shift_ids_to_remove)} shifts"
-        )
-        != "OK"
-    ):
-        return
+    # if (
+    #     sg.PopupOK(
+    #         f"Remove {volunteer.name} from {len(vol_shift_ids_to_remove)} shifts"
+    #     )
+    #     != "OK"
+    # ):
+    #     return
     for i, id in enumerate(vol_shift_ids_to_remove):
-        if not sg.one_line_progress_meter(
-            "Removing sign up...", i + 1, len(vol_shift_ids_to_remove)
-        ):
-            break
+        # if not sg.one_line_progress_meter(
+        #     "Removing sign up...", i + 1, len(vol_shift_ids_to_remove)
+        # ):
+        #     break
         post_remove_sign_up(session, id)
     return len(vol_shift_ids_to_remove)
 
@@ -654,12 +653,12 @@ async def acreate_multiple_shifts(
                 )
         for coro in asyncio.as_completed(tasks):
             res.append(await coro)
-            sg.one_line_progress_meter("Deleting Shifts", i + 1, len(tasks))
+            # sg.one_line_progress_meter("Deleting Shifts", i + 1, len(tasks))
             i += 1
     #     responses = await asyncio.gather(*tasks)
     # print(responses)
     # sg.Popup(f"Shifts added: {responses}")
-    sg.Popup(f"Shifts added: {res}")
+    # sg.Popup(f"Shifts added: {res}")
     return
 
 
@@ -733,8 +732,8 @@ def create_multiple_shifts(
     # if window:
     #     window.write_event_value("-CREATION STARTED-", "")
     for i, times in enumerate(time_list):
-        if not sg.one_line_progress_meter("Creating Shifts", i + 1, len(time_list)):
-            break
+        # if not sg.one_line_progress_meter("Creating Shifts", i + 1, len(time_list)):
+        #     break
         create_shift(
             session, start_time=times[0], end_time=times[1], shift_types=shift_types
         )
@@ -811,13 +810,13 @@ async def adelete_all_shifts(
             if not empty_only or (empty_only and not shift.vols):
                 shifts_to_delete.append(shift.shift_id)
 
-    if (
-        sg.PopupOKCancel(
-            f"Delete {len(shifts_to_delete)} shifts?\n\n{'ALL' if not empty_only else 'Empty'}, {types} shifts from:\n{start_date.format('dddd DD MMM YY')} to {end_date.format('dddd DD MMM YY')}"
-        )
-        != "OK"
-    ):
-        return
+    # if (
+    #     sg.PopupOKCancel(
+    #         f"Delete {len(shifts_to_delete)} shifts?\n\n{'ALL' if not empty_only else 'Empty'}, {types} shifts from:\n{start_date.format('dddd DD MMM YY')} to {end_date.format('dddd DD MMM YY')}"
+    #     )
+    #     != "OK"
+    # ):
+    #     return
     async with aiohttp.ClientSession(
         auth=auth, connector=aiohttp.TCPConnector(limit=5)
     ) as session:
@@ -828,12 +827,12 @@ async def adelete_all_shifts(
             tasks.append(asyncio.create_task(adelete_shift(session, id)))
         for coro in asyncio.as_completed(tasks):
             res.append(await coro)
-            sg.one_line_progress_meter("Deleting Shifts", i + 1, len(tasks))
-            i += 1
+            # sg.one_line_progress_meter("Deleting Shifts", i + 1, len(tasks))
+            # i += 1
         # r = await asyncio.gather(*tasks)
     # print(f"{len(r)} shifts deleted")
     # sg.Popup(f"{len(r)} shifts deleted")
-    sg.Popup(f"{len(res)} shifts deleted")
+    # sg.Popup(f"{len(res)} shifts deleted")
     return
 
 
@@ -863,10 +862,10 @@ def delete_all_shifts(
                 shifts_to_delete.append(shift.shift_id)
     print("Deleting shifts..")
     for i, id in enumerate(shifts_to_delete):
-        if not sg.one_line_progress_meter(
-            "Deleting Shifts", i + 1, len(shifts_to_delete), orientation="h"
-        ):
-            break
+        # if not sg.one_line_progress_meter(
+        #     "Deleting Shifts", i + 1, len(shifts_to_delete), orientation="h"
+        # ):
+        #     break
         delete_shift(session, id)
     print(f"{len(shifts_to_delete)} shifts deleted")
 
