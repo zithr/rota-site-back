@@ -30,7 +30,7 @@ async def login(login_data: LoginModel, response: Response):
     jar = await get_cookies(login_data)
     if not jar:
         return {"message": "login failed"}  # send login error to FE
-    valid = await test_is_logged_in(jar)
+    valid = await test_is_logged_in(cookie_jar=jar)
     if not valid:
         return {"message": "cookies invalid/expired"}
     content = {"message": "login success"}
