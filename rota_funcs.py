@@ -517,6 +517,7 @@ async def aget_rota(session, date: pendulum.DateTime, rota=None, end=None):
     # print(res.status_code)
 
     soup = BeautifulSoup(html, "html.parser")
+    page_missing = None
 
     for dt in period.range("days"):
         if dt < date:
@@ -525,6 +526,8 @@ async def aget_rota(session, date: pendulum.DateTime, rota=None, end=None):
             break
         day = soup.find("td", id=f"day_{dt.format('YYYY_MM_DD')}")
         if not day:
+            logger.warning(f"rota info not found for {dt}")
+            page_missing = soup.prettify()
             return
         shifts = day.find_all("div", class_="rota_item")
 
@@ -552,6 +555,8 @@ async def aget_rota(session, date: pendulum.DateTime, rota=None, end=None):
                     dt_obj=dt_obj,
                 )
             )
+    if page_missing:
+        print(page_missing)
     return rota
 
 

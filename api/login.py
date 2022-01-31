@@ -26,6 +26,7 @@ tr_login_form_model = {
 
 @login_router.post("/api/login")
 async def login(login_data: LoginModel, response: Response):
+    logger.info(f"Login attempt: {login_data.username}")
     jar = await get_cookies(login_data)
     if not jar:
         return {"message": "login failed"}  # send login error to FE
