@@ -13,6 +13,7 @@ app = FastAPI()
 app.include_router(login_router)
 app.include_router(get_rota_router)
 
+
 origins = [
     "https://zithr.github.io",
 ] + [f"http://localhost:{i}" for i in range(1, 2 ** 16)]

@@ -36,3 +36,9 @@ async def get_rota(day: int = pendulum.today().day, month: int = pendulum.today(
     logger.info("Rota downloaded")
     return rota
     
+
+@get_rota_router.get("/api/test")
+async def get_test(_o6_session: Optional[str] = Cookie(None), account_credentials: Optional[str] = Cookie(None)):
+    cookies = {"_o6_session": _o6_session,"account_credentials": account_credentials}
+    success = await test_is_logged_in(cookies=cookies)
+    return {"message": f"test success: {success}"}
