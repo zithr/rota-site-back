@@ -450,7 +450,7 @@ async def abuild_rota_data(
         f"Building rota from {start_date.to_date_string()} to {end_date.to_date_string()}.."
     )
     if cookies:
-        test_is_logged_in(cookies=cookies)
+        await test_is_logged_in(cookies=cookies)
 
     rota_period = end_date - start_date
     rota_cycles = math.ceil(rota_period.days / 28)
