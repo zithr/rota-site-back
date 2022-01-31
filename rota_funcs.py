@@ -10,8 +10,7 @@ import time, json
 from loguru import logger
 from env.secret import login_info
 from bs4 import BeautifulSoup
-
-
+from api.login import test_is_logged_in
 @dataclass()
 class RotaBro:
     shift_id: str
@@ -450,6 +449,8 @@ async def abuild_rota_data(
     print(
         f"Building rota from {start_date.to_date_string()} to {end_date.to_date_string()}.."
     )
+    if cookies:
+        test_is_logged_in(cookies=cookies)
 
     rota_period = end_date - start_date
     rota_cycles = math.ceil(rota_period.days / 28)
@@ -517,9 +518,8 @@ async def aget_rota(session, date: pendulum.DateTime, rota=None, end=None):
     # print(res.status_code)
 
     soup = BeautifulSoup(html, "html.parser")
-    # print(soup)
-    # print(soup.body.string)
-    page_missing = None
+    if "Difficulty logging in?" in soup:
+        logger.warn("No access to rota, scraping failed")
 
     for dt in period.range("days"):
         if dt < date:

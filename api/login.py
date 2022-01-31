@@ -66,14 +66,30 @@ async def get_cookies(login_data: LoginModel) -> aiohttp.CookieJar:
     raise HTTPException(status_code=401, detail="Invalid login")
 
 
-async def test_is_logged_in(
-    cookie_jar: aiohttp.CookieJar,
+async def test_is_logged_in(cookies = None,
+    cookie_jar: aiohttp.CookieJar = None,
 ) -> bool:  # TODO pull cookiejar from FE
-    async with aiohttp.ClientSession(cookie_jar=cookie_jar) as session:
-        res = await session.get(test_url, allow_redirects=False)
-        status = res.status
-        if status != 200:
-            logger.info("Not logged in")
-            raise HTTPException(status_code=401, detail="Invalid login")
-            return
-        return True
+
+    # test with cookies
+    if not cookie_jar:
+        async with aiohttp.ClientSession(cookies=cookies) as session:
+            res = await session.get(test_url, allow_redirects=False)
+            status = res.status
+            if status != 200:
+                logger.info("Test login fail (cookies)")
+                raise HTTPException(status_code=401, detail="Invalid login")
+                return
+            logger.info("Test login success (cookies)")
+            return True
+
+    # test with cookie jar
+    else:
+        async with aiohttp.ClientSession(cookie_jar=cookie_jar) as session:
+            res = await session.get(test_url, allow_redirects=False)
+            status = res.status
+            if status != 200:
+                logger.info("Test login fail (cookie jar)")
+                raise HTTPException(status_code=401, detail="Invalid login")
+                return
+            logger.info("Test login success (cookie jar)")
+            return True
