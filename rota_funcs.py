@@ -506,7 +506,7 @@ async def aget_rota(session, date: pendulum.DateTime, rota=None, end=None):
     end_date = min(start_date.add(days=27), end)
     period = pendulum.period(start_date, end_date)
     async with session.get(
-        f"https://www.3r.org.uk/rota/for/{date.year}-{date.month}-{date.day}/month", allow_redirects=False
+        f"https://www.3r.org.uk/rota/for/{date.year}-{date.month}-{date.day}/month",
     ) as response:  # TypeError: post() takes 2 positional arguments but 3 were given
         print(
             f"Fetching rota for {start_date.to_date_string()} to {end_date.to_date_string()}.."
@@ -517,6 +517,8 @@ async def aget_rota(session, date: pendulum.DateTime, rota=None, end=None):
     # print(res.status_code)
 
     soup = BeautifulSoup(html, "html.parser")
+    # print(soup)
+    # print(soup.body.string)
     page_missing = None
 
     for dt in period.range("days"):
@@ -527,7 +529,7 @@ async def aget_rota(session, date: pendulum.DateTime, rota=None, end=None):
         day = soup.find("td", id=f"day_{dt.format('YYYY_MM_DD')}")
         if not day:
             logger.warning(f"rota info not found for {dt}")
-            page_missing = soup.prettify()
+            print(soup.prettify())
             return
         shifts = day.find_all("div", class_="rota_item")
 
@@ -555,8 +557,6 @@ async def aget_rota(session, date: pendulum.DateTime, rota=None, end=None):
                     dt_obj=dt_obj,
                 )
             )
-    if page_missing:
-        print(page_missing)
     return rota
 
 
